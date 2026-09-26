@@ -734,6 +734,22 @@ class MVD2Inspector:
         if found or result.end_trigger:
             self.meta.match_result = result
 
+     def _extract_team_display_names(self):
+        """Read the real (possibly custom) team names from CS[1568]/CS[1569].
+
+        Must run BEFORE _extract_scores_from_layouts(), which compares the
+        scoreboard's team labels against these names to tell a TDM match
+        apart from a 1v1 duel. Running it too late leaves that comparison
+        checking against the "Home"/"Away" dataclass defaults instead of
+        the server's actual configured team names.
+        """
+        home_name = self.configstrings.get(CS_GENERAL, "").strip()
+        away_name = self.configstrings.get(CS_GENERAL + 1, "").strip()
+        if home_name:
+            self.meta.team_home_name = home_name
+        if away_name:
+            self.meta.team_away_name = away_name
+
     def _extract_server_info(self):
         """Extract server name from layout footer."""
         raw = self.data.decode('ascii', errors='replace')
@@ -746,14 +762,6 @@ class MVD2Inspector:
             if '~' in candidate or len(candidate) > 20:
                 self.meta.server_name = candidate
                 break
-
-        # Team names from CS[1568] and CS[1569]
-        home_name = self.configstrings.get(CS_GENERAL, "").strip()
-        away_name = self.configstrings.get(CS_GENERAL + 1, "").strip()
-        if home_name:
-            self.meta.team_home_name = home_name
-        if away_name:
-            self.meta.team_away_name = away_name
 
     def _extract_match_timing(self):
         """Extract match state and timer from configstrings."""
@@ -920,7 +928,7 @@ class MVD2Inspector:
                             "net": p.net,
                             "ping": p.ping,
                         }
-                        for p in m.players if p.team == "Home"
+                        for p in m.players if p.team == m.team_home_name
                     ],
                 },
                 "away": {
@@ -934,7 +942,7 @@ class MVD2Inspector:
                             "net": p.net,
                             "ping": p.ping,
                         }
-                        for p in m.players if p.team == "Away"
+                        for p in m.players if p.team == m.team_away_name
                     ],
                 },
             },
