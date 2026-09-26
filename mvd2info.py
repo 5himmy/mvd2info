@@ -550,7 +550,7 @@ class MVD2Inspector:
         # These follow the "Name            Frags Dths Net Ping" header
         # Each player line: name padded to ~20 chars, then frags/deaths/net/ping
         player_score_pattern = re.compile(
-            r'string\s+"([A-Za-z0-9\[\]_\-\.]+)\s+'
+            r'string\s+"([A-Za-z0-9\[\]_\-\. ]+?)\s+'
             r'(-?\d+)\s+(-?\d+)\s+(-?\d+)\s+(-?\d+)"'
         )
 
@@ -586,8 +586,8 @@ class MVD2Inspector:
             spec_region = raw[spec_idx:spec_idx + 500]
             # Match: "Name:ping->Target    " or "Name:ping"
             spec_pattern = re.compile(
-                r'string\s+"([A-Za-z0-9\[\]_\-\.]+):(\d+)'
-                r'(?:->([A-Za-z0-9\[\]_\-\.]+))?\s*"'
+                r'string\s+"([A-Za-z0-9\[\]_\-\. ]+?):(\d+)'
+                r'(?:->([A-Za-z0-9\[\]_\-\. ]+?))?\s*"'
             )
             for m in spec_pattern.finditer(spec_region):
                 spec_name = m.group(1)
