@@ -247,6 +247,7 @@ class MVD2Inspector:
         self._parse_all_messages()
         self._extract_map_info()
         self._extract_players_and_teams()
+        self._extract_team_display_names()
         self._extract_scores_from_layouts()
         self._extract_match_result()
         self._extract_server_info()
@@ -734,7 +735,9 @@ class MVD2Inspector:
         if found or result.end_trigger:
             self.meta.match_result = result
 
-     def _extract_team_display_names(self):
+
+
+    def _extract_team_display_names(self):
         """Read the real (possibly custom) team names from CS[1568]/CS[1569].
 
         Must run BEFORE _extract_scores_from_layouts(), which compares the
